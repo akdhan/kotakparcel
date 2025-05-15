@@ -3,15 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paket;
+use App\Models\User;
 use App\Models\HistoryPaket;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
 {
     public function index()
     {
-        // Ambil semua data paket
+        $nama = Auth::user()->name;
         $pakets = Paket::all();
 
         // Hitung total jumlah paket

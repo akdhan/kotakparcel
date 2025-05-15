@@ -63,7 +63,7 @@
             <span class="pc-micon">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-truck-delivery"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M5 17h-2v-4m-1 -8h11v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5" /><path d="M3 9l4 0" /></svg>
               </span>              
-            <span class="pc-mtext">Pesanan Berjalan</span>
+            <span class="pc-mtext">Pesanan Aktif</span>
           </a>
         </li>
         <li class="pc-item">
@@ -79,7 +79,7 @@
             <span class="pc-micon">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
             </span>
-            <span class="pc-mtext">Transaksi</span>
+            <span class="pc-mtext">Transaksi Keseluruhan</span>
           </a>
         </li>
         <li class="pc-item">
@@ -107,34 +107,6 @@
               <li class="pc-item"><a class="pc-link" href="https://express.grab.com/id" target="_blank" rel="noopener noreferrer" data-i18n="Grab">Grab</a></li>
             </ul>            
           </li>
-        <li class="pc-item pc-caption">
-          <label data-i18n="Widget">Pages</label>
-          <i class="pc-micon">
-            <svg class="pc-icon">
-              <use xlink:href="#line-chart"></use>
-            </svg>
-          </i>
-        </li>
-        <li class="pc-item">
-          <a href="../pages/login.html" class="pc-link">
-            <span class="pc-micon">
-              <svg class="pc-icon">
-                <use xlink:href="#lock"></use>
-              </svg>
-            </span>
-            <span class="pc-mtext">Login</span>
-          </a>
-        </li>
-        <li class="pc-item">
-          <a href="../pages/register.html" class="pc-link">
-            <span class="pc-micon">
-              <svg class="pc-icon">
-                <use xlink:href="#user-add"></use>
-              </svg>
-            </span>
-            <span class="pc-mtext">Register</span>
-          </a>
-        </li>
         {{-- <li class="pc-item pc-caption">
           <label data-i18n="Widget">Other</label>
           <i class="pc-micon">
@@ -332,7 +304,7 @@
         aria-expanded="false"
       >
         <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
-        <span>Ahmad H</span>
+        <span>{{ Auth::user()->name }}</span>
       </a>
       <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
         <div class="dropdown-header">
@@ -341,7 +313,7 @@
               <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar wid-35">
             </div>
             <div class="flex-grow-1 ms-3">
-              <h6 class="mb-1">Ahmad Harun</h6>
+              <h6 class="mb-1">{{ Auth::user()->name }}</h6>
               <span>Pemilik Rumah</span>
             </div>
             <a href="#!" class="pc-head-link bg-transparent"><i class="ti ti-power text-danger"></i></a>
@@ -440,12 +412,12 @@
             <div class="col-md-12">
               <ul class="breadcrumb">
                 <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item"><a href="pakets">Pesanan Berjalan</a></li>
+                <li class="breadcrumb-item"><a href="pakets">Pesanan Aktif</a></li>
               </ul>
             </div>
             <div class="col-md-12">
               <div class="page-header-title">
-                <h2 class="mb-0">Pesanan Berjalan</h2>
+                <h2 class="mb-0">Pesanan Aktif</h2>
               </div>
             </div>
           </div>
@@ -456,19 +428,6 @@
       <!-- [ Main Content ] start -->
       <div class="row">
         <div class="col-md-12 col-xl-12">
-                      @php
-                        if (!function_exists('badgeClass')) {
-                            function badgeClass($status) {
-                                return match($status) {
-                                    'dikirim' => 'bg-warning text-dark',
-                                    'diterima' => 'bg-success',
-                                    default => 'bg-secondary',
-                                };
-                            }
-                        }
-                
-                        $semuaTransaksi = collect($paketsAktif)->merge($paketsSelesai);
-                      @endphp
             <main>
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped align-middle">
@@ -479,7 +438,7 @@
                                 <th>Nama Penerima</th>
                                 <th>Nomor Resi</th>
                                 <th>Ekspedisi</th>
-                                <th>Status</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -496,9 +455,11 @@
                                     </td>                       
                                     <td>{{ $paket->ekspedisi }}</td>
                                     <td>
-                                        <span class="badge {{ badgeClass($paket->status) }}">
-                                            {{ ucfirst($paket->status) }}
-                                        </span>
+                                      <form action="{{ route('pakets.selesai', $paket->id) }}" method="POST" style="display:inline">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-success btn-sm">Selesai</button>
+                                      </form>
                                     </td>
                                 </tr>
                             @endforeach

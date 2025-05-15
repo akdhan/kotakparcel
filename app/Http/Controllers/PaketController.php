@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paket;
+use App\Models\Transaksi;
 use App\Models\HistoryPaket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PaketController extends Controller
 {
     // Menampilkan daftar paket
     public function index()
 {
-    $pakets = Paket::all();
+    $nama = Auth::user()->name;
+    $pakets = Paket::where('status', 'dikirim')->get();
     $jumlahPaket = Paket::where('status', '!=', 'diterima')->count();
     $jumlahHistory = Paket::where('status', 'diterima')->count();
     $totalTransaksi = Paket::count();
@@ -73,43 +76,24 @@ class PaketController extends Controller
 
     // Mengupdate data paket, pindahkan ke history jika status diubah jadi "diterima"
     public function update(Request $request, $id)
-    {
-        $request->validate([
-            'nama_barang' => 'required|string|max:255',
-            'nama_penerima' => 'required|string|max:255',
-            'nomor_resi' => 'required|string',
-            'ekspedisi' => 'required|in:JNE,JNT,TIKI,POS,SHOPEE,GRAB',
-            'tanggal_pemesanan' => 'required|date',
-            'e_commerce' => 'required|string',
-            'berat_barang' => 'required|numeric',
-            'status' => 'required|in:dikirim,diterima',
-        ]);
+{
+    $request->validate([
+        'nama_barang' => 'required|string|max:255',
+        'nama_penerima' => 'required|string|max:255',
+        'nomor_resi' => 'required|string',
+        'ekspedisi' => 'required|in:JNE,JNT,TIKI,POS,SHOPEE,GRAB',
+        'tanggal_pemesanan' => 'required|date',
+        'e_commerce' => 'required|string',
+        'berat_barang' => 'required|numeric',
+        'status' => 'required|in:dikirim,diterima',
+    ]);
 
-        $paket = Paket::findOrFail($id);
+    $paket = Paket::findOrFail($id);
+    $paket->update($request->all());
 
-        // Jika status diubah jadi diterima, pindahkan ke history
-        if ($request->status === 'diterima') {
-            HistoryPaket::create([
-                'nama_barang' => $request->nama_barang,
-                'nama_penerima' => $request->nama_penerima,
-                'nomor_resi' => $request->nomor_resi,
-                'ekspedisi' => $request->ekspedisi,
-                'tanggal_pemesanan' => $request->tanggal_pemesanan,
-                'e_commerce' => $request->e_commerce,
-                'berat_barang' => $request->berat_barang,
-                'status' => 'diterima'
-            ]);
+    return redirect()->route('pakets.index')->with('success', 'Data paket berhasil diperbarui.');
+}
 
-            $paket->delete();
-
-            return redirect()->route('pakets.index')->with('success', 'Paket berhasil dipindahkan ke history.');
-        } else {
-            $paket->update($request->all());
-            return redirect()->route('pakets.index')->with('success', 'Paket berhasil diperbarui.');
-        }
-    }
-
-    // Menghapus paket dan memindahkan ke history
     public function destroy($id)
     {
         $paket = Paket::findOrFail($id);
@@ -129,4 +113,28 @@ class PaketController extends Controller
 
         return redirect()->route('pakets.index')->with('success', 'Paket berhasil dihapus dan dipindahkan ke history.');
     }
+    public function selesaikan($id)
+{
+    $paket = Paket::findOrFail($id);
+
+    // Tambahkan ke history
+    HistoryPaket::create([
+        'id_paket' => $paket->id,
+        'tanggal_paket_diterima' => now(),
+    ]);
+    
+    // Update status di transaksi
+    $transaksi = Transaksi::where('paket_id', $paket->id)->first();
+    if ($transaksi) {
+        $transaksi->status = 'diterima';
+        $transaksi->save();
+    }
+
+    // Update status paket
+    $paket->status = 'diterima';
+    $paket->save();
+
+    return redirect()->route('pakets.index')->with('success', 'Paket berhasil diselesaikan.');
+}
+
 }

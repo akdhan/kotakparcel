@@ -19,4 +19,10 @@ class Paket extends Model
         'berat_barang',
         'status',
     ];
+    
+    public function transaksi()
+    {
+        return $this->hasOne(Transaksi::class);
+    }
+
 }

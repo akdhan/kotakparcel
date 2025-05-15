@@ -99,7 +99,7 @@
             <span class="pc-micon">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-truck-delivery"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M5 17h-2v-4m-1 -8h11v12m-4 0h6m4 0h2v-6h-8m0 -5h5l3 5" /><path d="M3 9l4 0" /></svg>
               </span>              
-            <span class="pc-mtext">Pesanan Berjalan</span>
+            <span class="pc-mtext">Pesanan Aktif</span>
           </a>
         </li>
         <li class="pc-item">
@@ -115,7 +115,7 @@
             <span class="pc-micon">
                 <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-shopping-cart"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M6 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 19m-2 0a2 2 0 1 0 4 0a2 2 0 1 0 -4 0" /><path d="M17 17h-11v-14h-2" /><path d="M6 5l14 1l-1 7h-13" /></svg>
             </span>
-            <span class="pc-mtext">Transaksi</span>
+            <span class="pc-mtext">Transaksi Keseluruhan</span>
           </a>
         </li>
         <li class="pc-item">
@@ -143,34 +143,6 @@
               <li class="pc-item"><a class="pc-link" href="https://express.grab.com/id" target="_blank" rel="noopener noreferrer" data-i18n="Grab">Grab</a></li>
             </ul>            
           </li>
-        <li class="pc-item pc-caption">
-          <label data-i18n="Widget">Pages</label>
-          <i class="pc-micon">
-            <svg class="pc-icon">
-              <use xlink:href="#line-chart"></use>
-            </svg>
-          </i>
-        </li>
-        <li class="pc-item">
-          <a href="../pages/login.html" class="pc-link">
-            <span class="pc-micon">
-              <svg class="pc-icon">
-                <use xlink:href="#lock"></use>
-              </svg>
-            </span>
-            <span class="pc-mtext">Login</span>
-          </a>
-        </li>
-        <li class="pc-item">
-          <a href="../pages/register.html" class="pc-link">
-            <span class="pc-micon">
-              <svg class="pc-icon">
-                <use xlink:href="#user-add"></use>
-              </svg>
-            </span>
-            <span class="pc-mtext">Register</span>
-          </a>
-        </li>
         {{-- <li class="pc-item pc-caption">
           <label data-i18n="Widget">Other</label>
           <i class="pc-micon">
@@ -303,7 +275,7 @@
         aria-expanded="false"
       >
         <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
-        <span>Ahmad H</span>
+        <span>{{ Auth::user()->name }}</span>
       </a>
       <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
         <div class="dropdown-header">
@@ -312,10 +284,16 @@
               <img src="../assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar wid-35">
             </div>
             <div class="flex-grow-1 ms-3">
-              <h6 class="mb-1">Ahmad Harun</h6>
+              <h6 class="mb-1">{{ Auth::user()->name }}</h6>
               <span>Pemilik Rumah</span>
             </div>
-            <a href="#!" class="pc-head-link bg-transparent"><i class="ti ti-power text-danger"></i></a>
+            <a href="#" class="pc-head-link bg-transparent" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+              <i class="ti ti-power text-danger"></i>
+          </a>
+          
+          <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+          </form>
           </div>
         </div>
         <ul class="nav drp-tabs nav-fill nav-tabs" id="mydrpTab" role="tablist">
@@ -363,10 +341,14 @@
               <i class="ti ti-wallet"></i>
               <span>Billing</span>
             </a>
-            <a href="#!" class="dropdown-item">
+            <a href="#" class="dropdown-item" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
               <i class="ti ti-power"></i>
               <span>Logout</span>
             </a>
+            
+            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+              @csrf
+            </form>            
           </div>
           <div class="tab-pane fade" id="drp-tab-2" role="tabpanel" aria-labelledby="drp-t2" tabindex="0">
             <a href="#!" class="dropdown-item">
@@ -483,12 +465,12 @@
     const ctx = document.getElementById('monthlyChart').getContext('2d');
 
     const gradientBerjalan = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientBerjalan.addColorStop(0, 'rgba(255, 205, 86, 0.5)');
-    gradientBerjalan.addColorStop(1, 'rgba(255, 205, 86, 0)');
+    gradientBerjalan.addColorStop(0, 'rgba(75, 205, 75, 0.5)');
+    gradientBerjalan.addColorStop(1, 'rgba(75, 205, 75, 0)');
 
     const gradientSelesai = ctx.createLinearGradient(0, 0, 0, 400);
-    gradientSelesai.addColorStop(0, 'rgba(54, 162, 235, 0.5)');
-    gradientSelesai.addColorStop(1, 'rgba(54, 162, 235, 0)');
+    gradientSelesai.addColorStop(0, 'rgba(255, 205, 86, 0.5)');
+    gradientSelesai.addColorStop(1, 'rgba(255, 205, 86, 0)');
 
     const monthlyChart = new Chart(ctx, {
         type: 'line',
@@ -496,11 +478,11 @@
             labels: monthLabels,
             datasets: [
                 {
-                    label: 'Paket Berjalan',
+                    label: 'Paket Aktif',
                     data: paketBerjalan,
                     fill: true,
                     backgroundColor: gradientBerjalan,
-                    borderColor: 'rgba(255, 205, 86, 1)',
+                    borderColor: 'rgba(50, 205, 50, 1)',
                     tension: 0.4,
                     pointRadius: 5,
                     pointHoverRadius: 7,
@@ -511,7 +493,7 @@
                     data: paketSelesai,
                     fill: true,
                     backgroundColor: gradientSelesai,
-                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderColor: 'rgba(255, 205, 86, 1)',
                     tension: 0.4,
                     pointRadius: 5,
                     pointHoverRadius: 7,

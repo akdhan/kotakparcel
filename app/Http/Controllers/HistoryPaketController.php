@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\HistoryPaket;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class HistoryPaketController extends Controller
 {
     // Menampilkan daftar history paket
     public function index()
     {
+        $nama = Auth::user()->name;
         $historyPakets = HistoryPaket::latest()->get(); 
         return view('index_history', compact('historyPakets')); 
     }

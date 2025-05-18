@@ -17,4 +17,14 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    public function pakets()
+    {
+        return $this->hasMany(Paket::class);
+    }
+
+    public function history_pakets()
+    {
+        return $this->hasMany(HistoryPaket::class);
+    }
 }

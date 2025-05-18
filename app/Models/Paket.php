@@ -18,11 +18,17 @@ class Paket extends Model
         'e_commerce',
         'berat_barang',
         'status',
+        'user_id',
     ];
     
     public function transaksi()
     {
         return $this->hasOne(Transaksi::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
 }

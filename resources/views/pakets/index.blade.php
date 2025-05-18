@@ -443,9 +443,9 @@
                         </thead>
                         <tbody>
                             @foreach($pakets as $index => $paket)
-                                <tr onclick="window.location.href='{{ route('pakets.show', $paket->id) }}'" style="cursor: pointer;">
+                              <tr>
                                     <td class="table-number">{{ $index + 1 }}</td>
-                                    <td>{{ $paket->nama_barang }}</td>
+                                    <td onclick="window.location.href='{{ route('pakets.show', $paket->id) }}'" style="cursor: pointer;">{{ $paket->nama_barang }}</td>
                                     <td>{{ $paket->nama_penerima }}</td>
                                     <td>
                                         <div class="d-flex align-items-center justify-content-between">
@@ -461,7 +461,7 @@
                                         <button type="submit" class="btn btn-success btn-sm">Selesai</button>
                                       </form>
                                     </td>
-                                </tr>
+                              </tr>
                             @endforeach
                         </tbody>
                     </table>
@@ -522,6 +522,15 @@
   
 
 </body>
-<!-- [Body] end -->
+<script>
+    function salinResi(index) {
+        const resiText = document.getElementById('resi-' + index).innerText;
+        navigator.clipboard.writeText(resiText).then(function() {
+            alert("Nomor resi disalin: " + resiText);
+        }, function(err) {
+            alert("Gagal menyalin resi");
+        });
+    }
+</script>
 
 </html>

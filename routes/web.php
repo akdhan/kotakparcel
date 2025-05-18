@@ -4,6 +4,7 @@ use App\Http\Controllers\HistoryPaketController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BlynkController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -11,6 +12,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/blynk', [BlynkController::class, 'index']);
+Route::post('/blynk/update', [BlynkController::class, 'update']);
 
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {return view('welcome');});

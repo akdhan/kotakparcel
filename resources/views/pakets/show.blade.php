@@ -19,12 +19,6 @@
                 <p class="card-text"><strong>E-Commerce:</strong> {{ $paket->e_commerce }}</p>
                 <p class="card-text"><strong>Berat Barang:</strong> {{ $paket->berat_barang }} kg</p>
                 <a href="{{ route('pakets.index') }}" class="btn btn-secondary">Kembali</a>
-                <a href="{{ route('pakets.edit', $paket->id) }}" class="btn btn-warning">Edit</a>
-                <form action="{{ route('pakets.destroy', $paket->id) }}" method="POST" style="display:inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus paket ini?')">Hapus</button>
-                </form>
             </div>
         </div>
     </div>

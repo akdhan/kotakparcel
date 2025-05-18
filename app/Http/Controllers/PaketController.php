@@ -14,6 +14,7 @@ class PaketController extends Controller
     public function index()
 {
     $nama = Auth::user()->name;
+    $pakets = Paket::where('user_id', Auth::id())->get();
     $pakets = Paket::where('status', 'dikirim')->get();
     $jumlahPaket = Paket::where('status', '!=', 'diterima')->count();
     $jumlahHistory = Paket::where('status', 'diterima')->count();
@@ -51,19 +52,18 @@ class PaketController extends Controller
             'berat_barang' => 'required|numeric',
         ]);
 
-        Paket::create(array_merge(
-            $request->only([
-                'nama_barang',
-                'nama_penerima',
-                'nomor_resi',
-                'ekspedisi',
-                'tanggal_pemesanan',
-                'e_commerce',
-                'berat_barang'
-            ]),
-            ['status' => 'dikirim']
-        ));
-
+        Paket::create([
+            'nama_barang' => $request->nama_barang,
+            'nama_penerima' => $request->nama_penerima,
+            'nomor_resi' => $request->nomor_resi,
+            'ekspedisi' => $request->ekspedisi,
+            'tanggal_pemesanan' => $request->tanggal_pemesanan,
+            'e_commerce' => $request->e_commerce,
+            'berat_barang' => $request->berat_barang,
+            'status' => 'dikirim',
+            'user_id' => Auth::id(),
+        ]);
+        
         return redirect()->route('pakets.index')->with('success', 'Paket berhasil ditambahkan.');
     }
 
@@ -106,7 +106,7 @@ class PaketController extends Controller
             'tanggal_pemesanan' => $paket->tanggal_pemesanan,
             'e_commerce' => $paket->e_commerce,
             'berat_barang' => $paket->berat_barang,
-            'status' => 'diterima' // Saat dihapus, anggap sudah diterima
+            'status' => 'diterima'
         ]);
 
         $paket->delete();

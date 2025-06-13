@@ -13,9 +13,6 @@ Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('regi
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/blynk', [BlynkController::class, 'index']);
-Route::post('/blynk/update', [BlynkController::class, 'update']);
-
 Route::middleware('auth')->group(function () {
     Route::get('/', function () {return view('welcome');});
     Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -31,4 +28,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/history', [HistoryPaketController::class, 'index'])->name('index_history');
 
     Route::get('/transaksis', [TransaksiController::class, 'index'])->name('index_transaksi');
+
+    Route::get('/blynk', [BlynkController::class, 'index']);
+    Route::post('/blynk/update', [BlynkController::class, 'update']);
 });

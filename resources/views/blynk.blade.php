@@ -65,14 +65,14 @@
                 <h4 class="mt-2">{{ $qr }}</h4>
             </div>
         </div>
-
+        <a href="{{ route('welcome') }}" class="btn btn-secondary">Kembali</a>
     </div>
 </div>
 
 <script>
     function togglePin(pin, checkbox) {
         const value = checkbox.checked ? 1 : 0;
-        fetch('/dashboard/update', {
+        fetch('/blynk/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

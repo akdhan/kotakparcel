@@ -23,6 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/pakets/{paket}/edit', [PaketController::class, 'edit'])->name('pakets.edit');
     Route::resource('pakets', PaketController::class);
     Route::put('/pakets/{paket}/selesai', [PaketController::class, 'selesaikan'])->name('pakets.selesai');
+    Route::post('/cek-resi', [PaketController::class, 'cekResi']);
 
 
     Route::get('/history', [HistoryPaketController::class, 'index'])->name('index_history');
@@ -31,4 +32,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/blynk', [BlynkController::class, 'index']);
     Route::post('/blynk/update', [BlynkController::class, 'update']);
+    Route::post('/webhook-blynk', [BlynkController::class, 'webhookTrigger']);
+
 });

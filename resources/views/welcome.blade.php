@@ -65,6 +65,23 @@
 </style>
 
 </head>
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+<script>
+    Pusher.logToConsole = true;
+
+    var pusher = new Pusher('ISI_APP_KEY_PUSHER', {
+        cluster: 'mt1'
+    });
+
+    var channel = pusher.subscribe('box-channel');
+    channel.bind('App\\Events\\BoxOpened', function(data) {
+        alert(data.message); // Ganti dengan SweetAlert/Toastr kalau mau
+
+        var item = '<li class="dropdown-item">' + data.title + ': ' + data.message + '</li>';
+        document.getElementById('notifikasi-list').insertAdjacentHTML('afterbegin', item);
+    });
+</script>
+
 <!-- [Head] end -->
 <!-- [Body] Start -->
 
@@ -101,7 +118,7 @@
                 <use xlink:href="#dashboard"></use>
               </svg>
             </span>              
-            <span class="pc-mtext">Dashboard Blynk</span>
+            <span class="pc-mtext">Blynk</span>
           </a>
         </li>
         <li class="pc-item">
@@ -232,43 +249,8 @@
         </div>
         <div class="dropdown-divider"></div>
         <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative" style="max-height: calc(100vh - 215px)">
-          <div class="list-group list-group-flush w-100">
-            <a class="list-group-item list-group-item-action">
-              <div class="d-flex">
-                <div class="flex-grow-1 ms-1">
-                  <span class="float-end text-muted">3:00 AM</span>
-                  <p class="text-body mb-1">Terjadi percobaan pengambilan kotak</p>
-                  <span class="text-muted">23 April 2025</span>
-                </div>
-              </div>
-            </a>
-            <a class="list-group-item list-group-item-action">
-              <div class="d-flex">
-                <div class="flex-grow-1 ms-1">
-                  <span class="float-end text-muted">6:00 PM</span>
-                  <p class="text-body mb-1">Ada paket yang datang, silahkan cek kotak</p>
-                  <span class="text-muted">23 Maret 2025</span>
-                </div>
-              </div>
-            </a>
-            <a class="list-group-item list-group-item-action">
-              <div class="d-flex">
-                <div class="flex-grow-1 ms-1">
-                  <span class="float-end text-muted">2:45 PM</span>
-                  <p class="text-body mb-1">Ada paket yang datang, silahkan cek kotak</b></p>
-                  <span class="text-muted">25 Februari 2025</span>
-                </div>
-              </div>
-            </a>
-            <a class="list-group-item list-group-item-action">
-              <div class="d-flex">
-                <div class="flex-grow-1 ms-1">
-                  <span class="float-end text-muted">11:10 PM</span>
-                  <p class="text-body mb-1">Terjadi percobaan pengambilan kotak</b></p>
-                  <span class="text-muted">20 Februari 2025</span>
-                </div>
-              </div>
-            </a>
+          <div class="list-group list-group-flush w-100" id="notifikasi-list">
+
           </div>
         </div>
         <div class="dropdown-divider"></div>
@@ -553,8 +535,10 @@
 </script>
 
         <div class="text-center mt-5">
-            <button class="btn-buka-kotak" onclick="alert('Kotak dibuka! 🚀')">
+            <button class="btn-buka-kotak" onclick="alert('Kotak dibuka! 🚀')" role="switch" id="solenoidSwitch" onchange="togglePin('V2', this)" 
+            {{ $solenoid == 1 ? 'checked' : ''}}>
              TEKAN UNTUK BUKA KOTAK
+            <label class="form-check-label switch-label" for="solenoidSwitch"></label>
             </button>
         </div>   
       </div>
@@ -609,7 +593,11 @@
     font_change('Public-Sans');
   </script>
 
+@vite('resources/js/app.js')
+
 </body>
+
+
 <!-- [Body] end -->
 
 </html>

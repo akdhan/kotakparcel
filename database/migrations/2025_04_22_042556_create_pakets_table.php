@@ -17,7 +17,7 @@ class CreatePaketsTable extends Migration
             $table->id();
             $table->string('nama_barang');
             $table->string('nama_penerima');
-            $table->text('nomor_resi');
+            $table->text('nomor_resi')->nullable();
             $table->enum('ekspedisi', ['JNE','JNT','TIKI','POS','SHOPEE','GRAB']);
             $table->date('tanggal_pemesanan');
             $table->text('e_commerce');

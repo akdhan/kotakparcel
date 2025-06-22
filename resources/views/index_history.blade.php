@@ -3,7 +3,7 @@
 <!-- [Head] start -->
 
 <head>
-  <title>Kotak Parcel Cerdas untuk Efisiensi keamanan Pengiriman barang </title>
+  <title>Pesanan Selesai </title>
   <!-- [Meta] -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
@@ -64,7 +64,7 @@
                 <use xlink:href="#dashboard"></use>
               </svg>
             </span>              
-            <span class="pc-mtext">Dashboard Blynk</span>
+            <span class="pc-mtext">Blynk</span>
           </a>
         </li>
         <li class="pc-item">

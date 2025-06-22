@@ -114,7 +114,7 @@ class PaketController extends Controller
         return redirect()->route('pakets.index')->with('success', 'Paket berhasil dihapus dan dipindahkan ke history.');
     }
     public function selesaikan($id)
-{
+    {
     $paket = Paket::findOrFail($id);
 
     // Tambahkan ke history
@@ -135,6 +135,38 @@ class PaketController extends Controller
     $paket->save();
 
     return redirect()->route('pakets.index')->with('success', 'Paket berhasil diselesaikan.');
-}
+    }
+    public function cekResi(Request $request)
+    {
+    $request->validate([
+        'kode_resi' => 'required|string',
+    ]);
+
+    $kode_resi = strtoupper($request->kode_resi);
+
+    // Cek awalan SHP atau TKP
+    if (!(str_starts_with($kode_resi, 'SHP') || str_starts_with($kode_resi, 'TKP'))) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Format resi tidak valid'
+        ], 400);
+    }
+
+    // Cek ke database pakets berdasarkan kolom 'nomor_resi'
+    $paket = Paket::where('nomor_resi', $kode_resi)->first();
+
+    if (!$paket) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Resi tidak ditemukan'
+        ], 404);
+    }
+
+    return response()->json([
+        'status' => 'success',
+        'message' => 'Resi valid, kotak terbuka'
+    ], 200);
+    }
+
 
 }

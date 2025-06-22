@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Paket;
+use Illuminate\Support\Facades\Http;
 use App\Models\User;
 use App\Models\HistoryPaket;
 use Illuminate\Support\Carbon;
@@ -11,6 +12,8 @@ use Illuminate\Http\Request;
 
 class WelcomeController extends Controller
 {
+    protected $token = 'NDuPUR3zgrbK_hso1TfFbFiVNk2cewsd';
+
     public function index()
     {
         $nama = Auth::user()->name;
@@ -36,10 +39,11 @@ class WelcomeController extends Controller
                                     ->where('status', 'diterima')
                                     ->count();
         }
+        $solenoid = Http::get("https://blynk.cloud/external/api/get?token={$this->token}&vpin=V2")->body();
 
         return view('welcome', compact(
             'pakets', 'jumlahPaket', 'jumlahHistory', 'totalTransaksi',
-            'monthLabels', 'monthPaket', 'monthHistory'
+            'monthLabels', 'monthPaket', 'monthHistory', 'solenoid'
         ));
     }
 }

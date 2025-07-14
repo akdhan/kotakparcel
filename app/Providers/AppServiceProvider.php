@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Carbon\Carbon;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Broadcast;
 
@@ -25,6 +26,8 @@ class AppServiceProvider extends ServiceProvider
         if (file_exists(base_path('routes/channels.php'))) {
             require base_path('routes/channels.php');
         }
+         
+        Carbon::setLocale('id');
     }
 
 }

@@ -5,6 +5,7 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\WelcomeController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BlynkController;
+use App\Http\Controllers\NotifikasiController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -14,7 +15,12 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', function () {return view('welcome');});
+    Route::get('/blynk', function () {return view('blynk');});
+    Route::get('/blynk', [BlynkController::class, 'index']);
+    Route::post('/blynk/update', [BlynkController::class, 'update']);
+    Route::post('/webhook-blynk', [BlynkController::class, 'webhookTrigger']);
+
+    
     Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
     Route::get('/pakets', [PaketController::class, 'index'])->name('pakets.index');
@@ -30,8 +36,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/transaksis', [TransaksiController::class, 'index'])->name('index_transaksi');
 
-    Route::get('/blynk', [BlynkController::class, 'index']);
-    Route::post('/blynk/update', [BlynkController::class, 'update']);
-    Route::post('/webhook-blynk', [BlynkController::class, 'webhookTrigger']);
+
+
+    Route::post('/notification', [NotifikasiController::class, 'store']);
 
 });

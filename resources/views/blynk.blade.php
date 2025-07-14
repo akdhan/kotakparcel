@@ -12,6 +12,7 @@
   <meta name="description" content="Mantis is made using Bootstrap 5 design framework. Download the free admin template & use it for your project.">
   <meta name="keywords" content="Mantis, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template">
   <meta name="author" content="CodedThemes"> --}}
+  <meta name="csrf-token" content="{{ csrf_token() }}">
 
   <!-- [Favicon] icon -->
   <link rel="icon" href="../assets/images/favicon.svg" type="image/x-icon"> <!-- [Google Font] Family -->
@@ -272,42 +273,17 @@
         <div class="dropdown-divider"></div>
         <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative" style="max-height: calc(100vh - 215px)">
           <div class="list-group list-group-flush w-100">
+            @foreach ($notifications as $key=> $notification)  
             <a class="list-group-item list-group-item-action">
               <div class="d-flex">
                 <div class="flex-grow-1 ms-1">
-                  <span class="float-end text-muted">3:00 AM</span>
-                  <p class="text-body mb-1">Terjadi percobaan pengambilan kotak</p>
-                  <span class="text-muted">23 April 2025</span>
+                  <span class="float-end text-muted">{{ \Carbon\Carbon::parse($notification->created_at)->format('g.i A') }}</span>
+                  <p class="text-body mb-1">{{$notification->message}}</p>
+                 <span class="text-muted">{{ \Carbon\Carbon::parse($notification->created_at)->translatedFormat('d F Y') }}</span>
                 </div>
               </div>
             </a>
-            <a class="list-group-item list-group-item-action">
-              <div class="d-flex">
-                <div class="flex-grow-1 ms-1">
-                  <span class="float-end text-muted">6:00 PM</span>
-                  <p class="text-body mb-1">Ada paket yang datang, silahkan cek kotak</p>
-                  <span class="text-muted">23 Maret 2025</span>
-                </div>
-              </div>
-            </a>
-            <a class="list-group-item list-group-item-action">
-              <div class="d-flex">
-                <div class="flex-grow-1 ms-1">
-                  <span class="float-end text-muted">2:45 PM</span>
-                  <p class="text-body mb-1">Ada paket yang datang, silahkan cek kotak</b></p>
-                  <span class="text-muted">25 Februari 2025</span>
-                </div>
-              </div>
-            </a>
-            <a class="list-group-item list-group-item-action">
-              <div class="d-flex">
-                <div class="flex-grow-1 ms-1">
-                  <span class="float-end text-muted">11:10 PM</span>
-                  <p class="text-body mb-1">Terjadi percobaan pengambilan kotak</b></p>
-                  <span class="text-muted">20 Februari 2025</span>
-                </div>
-              </div>
-            </a>
+            @endforeach
           </div>
         </div>
         <div class="dropdown-divider"></div>
@@ -450,14 +426,149 @@
 <div class="container py-5">
     <h2 class="mb-4"></h2>
     <div class="row g-3">
+        <div class="row">
+        <!-- [ sample-page ] start -->
+        <div class="col-md-6 col-xl-3">
+          <div class="card alert alert-success">
+            <div class="card-body">
+              <h4 class="mb-2 f-w-400 text-muted">Paket Aktif</h4>
+              <h3 class="mb-3">{{ $jumlahPaket }}<span class="badge bg-light-primary border border-primary"></h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+          <div class="card alert alert-warning">
+            <div class="card-body">
+              <h4 class="mb-2 f-w-400 text-muted">Paket Selesai</h4>
+              <h3 class="mb-3">{{ $jumlahHistory }} <span class="badge bg-light-success border border-success"></span></h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6 col-xl-3">
+          <div class="card alert alert-primary">
+            <div class="card-body">
+              <h4 class="mb-2 f-w-400 text-muted">Total Paket</h4>
+              <h3 class="mb-3">{{ $totalTransaksi }}<span class="badge bg-light-warning border border-warning"></span></h3>
+            </div>
+          </div>
+        </div>
+        {{-- <div class="col-md-6 col-xl-3">
+          <div class="card">
+            <div class="card-body">
+              <h6 class="mb-2 f-w-400 text-muted">Total Sales</h6>
+              <h4 class="mb-3">$35,078 <span class="badge bg-light-danger border border-danger"><i
+                    class="ti ti-trending-down"></i> 27.4%</span></h4>
+              <p class="mb-0 text-muted text-sm">You made an extra <span class="text-danger">$20,395</span> this year
+              </p>
+            </div>
+          </div>
+        </div> --}}
+        
+<div class="col-md-12 col-xl-10">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h3 class="mb-0">Paket</h3>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <canvas id="monthlyChart" height="100"></canvas>
+    </div>
+  </div>
+</div>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const monthLabels = @json($monthLabels);
+    const paketSelesai = @json($monthHistory);
+    const paketBerjalan = @json($monthPaket).map((total, index) => total - paketSelesai[index]);
+
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+
+    const gradientBerjalan = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientBerjalan.addColorStop(0, 'rgba(75, 205, 75, 0.5)');
+    gradientBerjalan.addColorStop(1, 'rgba(75, 205, 75, 0)');
+
+    const gradientSelesai = ctx.createLinearGradient(0, 0, 0, 400);
+    gradientSelesai.addColorStop(0, 'rgba(255, 205, 86, 0.5)');
+    gradientSelesai.addColorStop(1, 'rgba(255, 205, 86, 0)');
+
+    const monthlyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: monthLabels,
+            datasets: [
+                {
+                    label: 'Paket Aktif',
+                    data: paketBerjalan,
+                    fill: true,
+                    backgroundColor: gradientBerjalan,
+                    borderColor: 'rgba(50, 205, 50, 1)',
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    borderWidth: 2
+                },
+                {
+                    label: 'Paket Selesai',
+                    data: paketSelesai,
+                    fill: true,
+                    backgroundColor: gradientSelesai,
+                    borderColor: 'rgba(255, 205, 86, 1)',
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointHoverRadius: 7,
+                    borderWidth: 2
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1,
+                        callback: function(value) {
+                            return Number.isInteger(value) ? value : '';
+                        }
+                    },
+                    title: {
+                        display: true,
+                        text: 'Jumlah Paket'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Bulan'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                },
+                tooltip: {
+                    mode: 'index',
+                    intersect: false
+                }
+            },
+            interaction: {
+                mode: 'nearest',
+                axis: 'x',
+                intersect: false
+            }
+        }
+    });
+</script> 
         {{-- Sistem --}}
         <div class="col-md-4">
             <div class="card p-3">
                 <span class="mb-2">Sistem</span>
                 <div class="form-check form-switch">
+                    {{-- <input class="form-check-input" type="checkbox" role="switch" id="sistemSwitch"
+                           onchange="togglePin('V1', this)" {{ $sistem == 1 ? 'checked' : '' }}> --}}
                     <input class="form-check-input" type="checkbox" role="switch" id="sistemSwitch"
-                           onchange="togglePin('V1', this)" {{ $sistem == 1 ? 'checked' : '' }}>
+                           onchange="alertSistem('V1',this)" {{ $sistem == 1 ? 'checked' : '' }}>
                     <label class="form-check-label switch-label" for="sistemSwitch">Manual</label>
                 </div>
             </div>
@@ -470,6 +581,8 @@
                 <div class="form-check form-switch">
                     <input class="form-check-input" type="checkbox" role="switch" id="solenoidSwitch"
                            onchange="togglePin('V2', this)" {{ $solenoid == 1 ? 'checked' : '' }}>
+                    {{-- <input class="form-check-input" type="checkbox" role="switch" id="solenoidSwitch"
+                           onchange="alertSelenoid(this)" {{ $solenoid == 1 ? 'checked' : '' }}> --}}
                     <label class="form-check-label switch-label" for="solenoidSwitch"></label>
                 </div>
             </div>
@@ -480,8 +593,10 @@
             <div class="card p-3">
                 <span class="mb-2">Buzzer</span>
                 <div class="form-check form-switch">
+                    {{-- <input class="form-check-input" type="checkbox" role="switch" id="buzzerSwitch"
+                           onchange="togglePin('V4', this)" {{ $buzzer == 1 ? 'checked' : '' }}> --}}
                     <input class="form-check-input" type="checkbox" role="switch" id="buzzerSwitch"
-                           onchange="togglePin('V4', this)" {{ $buzzer == 1 ? 'checked' : '' }}>
+                           onchange="alertBuzzer('V4',this)" {{ $buzzer == 1 ? 'checked' : '' }}>
                     <label class="form-check-label switch-label" for="buzzerSwitch"></label>
                 </div>
             </div>
@@ -498,37 +613,178 @@
             <small class="text-muted">Last scanned: {{ now()->format('H:i:s') }}</small>
         @endif
     </div>
-</div>
+  </div>
+ </div>
+  </div>
+  </div>
+<script>
+  function alertSistem(pin, checkbox) {
+    const value = checkbox.checked ? 1 : 0;
+
+    // Data untuk notifikasi
+    const notificationData = {
+      title: value ? 'Sistem QR Code' : 'Sistem Toggle',
+      message: value ? 'Sistem Berganti ke QR Code' : 'Sistem Berganti ke Toggle',
+      is_read: value
+    };
+
+    // // Tampilkan alert lokal
+    // alert(value ? 'Sistem Berganti ke QR Code' : 'Sistem Berganti ke Toggle');
+
+    // Kirim notifikasi ke backend Laravel
+    fetch('/blynk/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ pin: pin, value: value })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status !== 'success') {
+        alert('Gagal mengirim perintah ke Blynk!');
+        checkbox.checked = !checkbox.checked; // revert
+      }
+    })
+    .catch(error => {
+      alert('Terjadi kesalahan koneksi ke Blynk!');
+      checkbox.checked = !checkbox.checked; // revert
+    });
+
+    fetch('/notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify(notificationData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Notifikasi:', data);
+    })
+    .catch(error => {
+      alert('Gagal mengirim notifikasi!');
+      checkbox.checked = !checkbox.checked; // revert
+    });
+  }
+</script>
 
 <script>
-    function togglePin(pin, checkbox) {
-        const value = checkbox.checked ? 1 : 0;
-        fetch('/blynk/update', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: JSON.stringify({ pin: pin, value: value })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status !== 'success') {
-                alert('Gagal mengirim perintah ke Blynk!');
-            }
-        })
-        .catch(error => {
-            alert('Terjadi kesalahan koneksi!');
-            checkbox.checked = !checkbox.checked; // revert
-        });
-    }
+  function togglePin(pin, checkbox) {
+    const value = checkbox.checked ? 1 : 0;
+
+    // Data untuk notifikasi
+    const notificationData = {
+      title: value ? 'Box Terbuka' : 'Box Tertutup',
+      message: value ? 'Saat ini Box Parcel Terbuka dengan Toggle' : 'Saat ini Box Parcel Tertutup dengan Toggle',
+      is_read: value
+    };
+
+    // Tampilkan alert lokal
+    alert(value ? 'Saat ini Box Parcel Terbuka dengan Toggle' : 'Saat ini Box Parcel Tertutup dengan Toggle');
+
+    // Kirim notifikasi ke backend Laravel
+    fetch('/notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify(notificationData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Notifikasi:', data);
+    })
+    .catch(error => {
+      alert('Gagal mengirim notifikasi!');
+      checkbox.checked = !checkbox.checked; // revert
+    });
+
+    // Kirim perintah ke Blynk
+    fetch('/blynk/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ pin: pin, value: value })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status !== 'success') {
+        alert('Gagal mengirim perintah ke Blynk!');
+        checkbox.checked = !checkbox.checked; // revert
+      }
+    })
+    .catch(error => {
+      alert('Terjadi kesalahan koneksi ke Blynk!');
+      checkbox.checked = !checkbox.checked; // revert
+    });
+  }
 </script>
 <script>
-// Refresh halaman setiap 5 detik untuk update QR
+  function alertBuzzer(pin, checkbox) {
+    const value = checkbox.checked ? 1 : 0;
+
+    // Data untuk notifikasi
+    const notificationData = {
+      title: value ? 'Buzzer Nyala' : 'Buzzer Mati',
+      message: value ? 'Buzzer telah Menyala' : 'Buzzer telah dimatikan',
+      is_read: value
+    };
+
+    // // Tampilkan alert lokal
+    // alert(value ? 'Buzzer telah dimatikan' : 'Buzzer telah hidup kembali');
+
+    // Kirim notifikasi ke backend Laravel
+    fetch('/notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify(notificationData)
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Notifikasi:', data);
+    })
+    .catch(error => {
+      alert('Gagal mengirim notifikasi!');
+      checkbox.checked = !checkbox.checked; // revert
+    });
+
+    // Kirim perintah ke Blynk
+    fetch('/blynk/update', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+      },
+      body: JSON.stringify({ pin: pin, value: value })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.status !== 'success') {
+        alert('Gagal mengirim perintah ke Blynk!');
+        checkbox.checked = !checkbox.checked; // revert
+      }
+    })
+    .catch(error => {
+      alert('Terjadi kesalahan koneksi ke Blynk!');
+      checkbox.checked = !checkbox.checked; // revert
+    });
+  }
+</script>
+<script>
 setInterval(() => {
     location.reload();
-}, 5000);
+}, 20000);
 </script>
+
   <!-- [ Main Content ] end -->
   <footer class="pc-footer">
     <div class="footer-wrapper container-fluid">
@@ -580,15 +836,4 @@ setInterval(() => {
   
 
 </body>
-<script>
-    function salinResi(index) {
-        const resiText = document.getElementById('resi-' + index).innerText;
-        navigator.clipboard.writeText(resiText).then(function() {
-            alert("Nomor resi disalin: " + resiText);
-        }, function(err) {
-            alert("Gagal menyalin resi");
-        });
-    }
-</script>
-
 </html>

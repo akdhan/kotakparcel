@@ -9,6 +9,7 @@ use App\Models\HistoryPaket;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Models\Notification;
 
 class WelcomeController extends Controller
 {
@@ -40,10 +41,11 @@ class WelcomeController extends Controller
                                     ->count();
         }
         $solenoid = Http::get("https://blynk.cloud/external/api/get?token={$this->token}&vpin=V2")->body();
+        $notifications = Notification::whereDate('created_at', Carbon::today())->get();
 
         return view('welcome', compact(
             'pakets', 'jumlahPaket', 'jumlahHistory', 'totalTransaksi',
-            'monthLabels', 'monthPaket', 'monthHistory', 'solenoid'
+            'monthLabels', 'monthPaket', 'monthHistory', 'solenoid', 'notifications'
         ));
     }
 }
